@@ -78,7 +78,7 @@
 			document.title = '(1) Lacer';
 
 		else
-			document.title = '(1) Lacer';
+			document.title = 'Changes!';
 	}
 
 </script>
