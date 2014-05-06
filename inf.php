@@ -71,17 +71,10 @@
 	$handleLaceM = fopen($fileLaceM, 'r');
 	$backLaceM = fopen($backlogLace, 'a+');
 	$oldDataLaceM = fread($handleLaceM, filesize($fileLaceM));
-//echo "$oldDataLaceM";	
-	//$findersLaceMSkip = strpos($laceM, $findersLaceM);
-	//$keepersLaceMSkip = strpos($laceM, $keepersEgl);
 	$findersLaceMVal = strpos($laceM, $findersLaceM);
 	$keepersLaceMVal = strpos($laceM, $keepersLaceM);
 	$strEndLenLaceM = $keepersLaceMVal - $findersLaceMVal;
 	$parsedStrLaceM = substr($laceM, $findersLaceMVal, $strEndLenLaceM);
-
-//echo "$parsedStrLaceM";
-//echo "$oldDataLaceM";
-		
 
 	if($oldDataLaceM != $parsedStrLaceM)
 	{
