@@ -1,14 +1,21 @@
 <?php
 	$fileEgl = 'egl.txt';
-	$filename2 = 'lacem.txt';
-	$backlog = 'backlog.txt';
+	$fileLaceM = 'lacem.txt';
+	$backlogEgl = 'backlog.txt';
+	$backlogLace = 'backlogL.txt';
 	$egl = file_get_contents('http://egl-comm-sales.livejournal.com/');
 	$laceM = file_get_contents('http://lacemarket.net/');
 
 	$title = "Lacer";
 	$changes = "No changes :l Sad";
-	$finders = "egl_comm_sales23";	
+	$findersEgl = "egl_comm_sales2";	
+	$keepersEgl = "<!-- entryHolder -->";
 
+	$findersLaceM = "post_id_";
+	$keepersLaceM = "<!-- end data box";
+
+
+	//Egl-Comm-Sales
 	if (is_writable($fileEgl)) 
 	{
 		if (!$handle = fopen($fileEgl, 'r')) 
@@ -16,10 +23,19 @@
        			echo "Cannot open file ($fileEgl)";
        			exit;
    		}
-		$back = fopen($backlog, 'r');
+	
+		$back = fopen($backlogEgl, 'a+');
 		
-		$oldData = fread($handle, filesize($fileEgl)); 
-		$parsedStr = substr($egl, strpos($egl, $finders), strpos($egl, ' ', 1769));
+		//Parse string
+		$findersEglSkip = strpos($egl, $findersEgl);
+		$keepersEglSkip = strpos($egl, $keepersEgl);
+		//Skip first post
+		$findersEglVal = strpos($egl, $findersEgl, $findersEglSkip + strlen($findersEgl));
+		$keepersEglVal = strpos($egl, $keepersEgl, $keepersEglSkip + strlen($keepersEgl));
+		$strEndLen = $keepersEglVal - $findersEglVal;
+		$parsedStr = substr($egl, $findersEglVal, $strEndLen);
+
+		$oldData = fread($handle, filesize($fileEgl));
 
 		if($oldData != $parsedStr)
 		{
@@ -28,10 +44,10 @@
 
 			//fseek() in future? whence SEEK_END	
 			fclose($back);
-			$back = fopen($backlog, 'a+');
-			fwrite($back, "</br></br>");
+			$back = fopen($backlogEgl, 'a+');
 			fwrite($back, $parsedStr);
-			$back = fopen($backlog, 'r');
+			fclose($back);
+			$back = fopen($backlogEgl, 'r');
 
 			fclose($handle);
 			$handle = fopen($fileEgl, 'w');
@@ -41,7 +57,7 @@
        				exit;
    			}
 		}
-		$content = fread($back, filesize($backlog));
+		$content = fread($back, filesize($backlogEgl));
 		fclose($back);
 		fclose($handle);
 	}
@@ -50,6 +66,41 @@
 	{
    		echo "The file $fileEgl is not writable";
 	}
+
+	//LaceMarket
+	$handleLaceM = fopen($fileLaceM, 'r');
+	$backLaceM = fopen($backlogLace, 'a+');
+	$oldDataLaceM = fread($handleLaceM, filesize($fileLaceM));
+//echo "$oldDataLaceM";	
+	//$findersLaceMSkip = strpos($laceM, $findersLaceM);
+	//$keepersLaceMSkip = strpos($laceM, $keepersEgl);
+	$findersLaceMVal = strpos($laceM, $findersLaceM);
+	$keepersLaceMVal = strpos($laceM, $keepersLaceM);
+	$strEndLenLaceM = $keepersLaceMVal - $findersLaceMVal;
+	$parsedStrLaceM = substr($laceM, $findersLaceMVal, $strEndLenLaceM);
+
+//echo "$parsedStrLaceM";
+//echo "$oldDataLaceM";
+		
+
+	if($oldDataLaceM != $parsedStrLaceM)
+	{
+		$title = "(1) Lacer";
+                $changes = "Wohoo finally!";
+
+		fclose($backLaceM);
+                $backLaceM = fopen($backlogLace, 'a+');
+                fwrite($backLaceM, $parsedStrLaceM);
+                fclose($backLaceM);
+		$backLaceM = fopen($backlogLace, 'r');
+
+                fclose($handleLaceM);
+                $handleLaceM = fopen($fileLaceM, 'w');
+                fwrite($handleLaceM, $parsedStrLaceM);
+	}
+	$content2 = fread($backLaceM, filesize($backlogLace));
+	fclose($backLaceM);
+	fclose($handleLaceM);
 ?>
 
 <!DOCTYPE html>
@@ -78,19 +129,20 @@
 			document.title = '(1) Lacer';
 
 		else
-			document.title = 'Changes!';
+			document.title = '(1) Lacer';
 	}
 
 </script>
 </head>
 <body>
 <?php echo $changes; ?>
-<div id="cont1" style="width: 50%;">	
+<div id="cont1" style="width: 50%; float: left; background-color: pink;">	
 	<p>History:</p>
 	<?php echo $content; ?>
 </div>
-<div id="cont2" style="">
+<div id="cont2" style="width: 50%; float: right; background-color: #9c98c2;">
 	<p>asd</p>
+	<?php echo $content2; ?>
 </div>
 </body>
 </html>
